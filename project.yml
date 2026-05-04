@@ -36,6 +36,7 @@ targets:
         SUEnableSystemProfiling: NO
         SUAutomaticallyUpdate: NO
         SUPublicEDKey: 6uujxcB+0J4Igx/JAY5RmD9BLh/gp9qesbj0wuQ4ZTk=
+        SUFeedURL: https://moldandyeast.github.io/porty-mcfolio/appcast.xml
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.portymcfolio.app
