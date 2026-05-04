@@ -1,0 +1,47 @@
+# Node
+Editor/node_modules/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Xcode
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.xccheckout
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# Swift Package Manager
+.build/
+
+# Claude Code local session state (permissions, etc.)
+.claude/settings.local.json
+
+# Brainstorming sessions
+.superpowers/
+
+# Git worktrees
+.worktrees/
+
+# Local build outputs
+build/
+dist/*.dmg
+dist/*.app/
+
+# Signing / notarization artifacts (must never be committed)
+*.p8
+*.p12
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.keychain
+*.keychain-db
