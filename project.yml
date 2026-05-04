@@ -13,6 +13,9 @@ packages:
   Yams:
     url: https://github.com/jpsim/Yams.git
     from: 5.0.0
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle.git
+    from: 2.6.0
 
 targets:
   PortyMcFolio:
@@ -37,6 +40,7 @@ targets:
       - package: GRDB
         product: GRDB
       - package: Yams
+      - package: Sparkle
     entitlements:
       path: PortyMcFolio/PortyMcFolio.entitlements
       properties:
