@@ -4,11 +4,13 @@ import SwiftUI
 struct PortyMcFolioApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var appState = AppState()
+    @StateObject private var updateController = UpdateController()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(appState)
+                .environmentObject(updateController)
                 .environment(\.theme, appState.theme)
                 .tint(appState.theme.colors.accent)
                 // Manual light/dark override: follows system when
@@ -36,6 +38,12 @@ struct PortyMcFolioApp: App {
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
         .defaultSize(width: 1100, height: 720)
         .commands {
+            CommandGroup(after: .appInfo) {
+                Button("Check for Updates…") {
+                    updateController.checkNow()
+                }
+                .disabled(!updateController.canCheckForUpdates)
+            }
             CommandGroup(replacing: .newItem) {
                 Button("New Project") { appState.isShowingNewProject = true }
                     .keyboardShortcut("n", modifiers: .command)
