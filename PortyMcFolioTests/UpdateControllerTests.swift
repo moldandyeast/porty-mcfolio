@@ -1,4 +1,5 @@
 import XCTest
+import Combine
 @testable import PortyMcFolio
 
 @MainActor
@@ -23,5 +24,14 @@ final class UpdateControllerTests: XCTestCase {
         XCTAssertEqual(controller.automaticallyChecksForUpdates, false)
         UserDefaults.standard.set(true, forKey: "SUEnableAutomaticChecks")
         XCTAssertEqual(controller.automaticallyChecksForUpdates, true)
+    }
+
+    func test_settingAutomaticallyChecks_firesObjectWillChange() {
+        let controller = UpdateController()
+        var fired = 0
+        let cancellable = controller.objectWillChange.sink { fired += 1 }
+        controller.automaticallyChecksForUpdates = !controller.automaticallyChecksForUpdates
+        XCTAssertEqual(fired, 1, "objectWillChange should fire exactly once on setter")
+        _ = cancellable
     }
 }
