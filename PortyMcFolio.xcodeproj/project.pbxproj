@@ -79,10 +79,12 @@
 		8C86B0BA75E3CC6D3543FEA4 /* EditorialCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E0837D26C91196E63250A6 /* EditorialCardView.swift */; };
 		8E2BE3C7B04341347BAC615D /* ClipboardPaste.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D18A0F07C7DFFE6CAD64ACC /* ClipboardPaste.swift */; };
 		8F7E16020BFEFC9747F0802F /* MarkdownPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF062C190102ED2D84B41597 /* MarkdownPreviewView.swift */; };
+		9276EA17CA84D414115589E5 /* UpdateControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B328FB00C71D47C717CCCD /* UpdateControllerTests.swift */; };
 		94FFD95C08CEC0CF2F59BB54 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2643299FB870E670976A666 /* ToastView.swift */; };
 		99AEA335CFBCB36FC03E9D7F /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3C2372B3E9FFDBFF726EBE /* AppState.swift */; };
 		9A8E642D77571896E8363188 /* SuggestedClientsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4917973D9A7D44C7067B3E9 /* SuggestedClientsTests.swift */; };
 		9C981F6800B123ADD41F9DE2 /* ProjectMetadataMutation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B7F60F5C4BC3CB04EAC1737 /* ProjectMetadataMutation.swift */; };
+		9DACAFEC78FC5FCB4A5F433C /* UpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258342E503731BFA2087495A /* UpdateController.swift */; };
 		A0249F013584C6EAF007DE30 /* SearchPaletteLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04707CC22640E7C74725B794 /* SearchPaletteLogic.swift */; };
 		A0DA4DB73CA1B0946C1973FE /* CarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B85B75DC2830D83072626CA /* CarouselView.swift */; };
 		A1C6B43E417A0C5720959AF4 /* AppStateProjectOnboardingPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902AFDA4E7830ABAE7061280 /* AppStateProjectOnboardingPersistenceTests.swift */; };
@@ -114,6 +116,7 @@
 		CD0015A92565E198AAD460A1 /* MediaKindTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C85AD175BC6275D1A4D2D2D0 /* MediaKindTests.swift */; };
 		CD483338480CEFF654021A72 /* FrontmatterParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2620DCBE4A317FDC1DB5DFCC /* FrontmatterParser.swift */; };
 		CD5EA810C616FF65231AB8A5 /* ClipboardPasteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5537FD17EEBFCACBDDC0F4E0 /* ClipboardPasteTests.swift */; };
+		CD8BBDE001C8873B36A20B8F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = EA015CA97AEACEB9BE597733 /* Sparkle */; };
 		CF7EC9F74D6F27E46BDCC042 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = C426CC2DA321880870D50D51 /* Project.swift */; };
 		D1C3AC18230EC2FC0F52B1E1 /* DragPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 623DC18F43F4832186C65715 /* DragPayload.swift */; };
 		D41FC9474FD67D7A300250C5 /* TagChipInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922F9F741C801111D5565589 /* TagChipInput.swift */; };
@@ -179,6 +182,7 @@
 		1FD97AFDAB0F0997EA7E0B9E /* LinkPreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewPanel.swift; sourceTree = "<group>"; };
 		1FEB82F0AA85EE2DA2CEA70B /* ProjectSettingsPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectSettingsPopover.swift; sourceTree = "<group>"; };
 		205585E07541065270F9AC82 /* SearchIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchIndex.swift; sourceTree = "<group>"; };
+		258342E503731BFA2087495A /* UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateController.swift; sourceTree = "<group>"; };
 		2620DCBE4A317FDC1DB5DFCC /* FrontmatterParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontmatterParser.swift; sourceTree = "<group>"; };
 		27FA85A25C72CBDDCC487F2F /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		2820D900665732C0329A2605 /* FilenameDisplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilenameDisplayTests.swift; sourceTree = "<group>"; };
@@ -253,6 +257,7 @@
 		BA29FF7BB36C273170AD9CA1 /* NewProjectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProjectSheet.swift; sourceTree = "<group>"; };
 		BC1CFE140FAC0791CAF56E95 /* ImageThumbnailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageThumbnailTests.swift; sourceTree = "<group>"; };
 		BCB707ED28884FC829404F4D /* UID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UID.swift; sourceTree = "<group>"; };
+		C1B328FB00C71D47C717CCCD /* UpdateControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateControllerTests.swift; sourceTree = "<group>"; };
 		C1FE4AB98689CEAADC90BE6F /* ProjectNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectNavigation.swift; sourceTree = "<group>"; };
 		C426CC2DA321880870D50D51 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		C4D2E705E70E64620E431523 /* MarkdownEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditorView.swift; sourceTree = "<group>"; };
@@ -306,6 +311,7 @@
 			files = (
 				FC4AB67F002F4B76CA0F6FFD /* GRDB in Frameworks */,
 				7A1F2EEB563D1DBA8EE8AB5D /* Yams in Frameworks */,
+				CD8BBDE001C8873B36A20B8F /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,6 +374,7 @@
 				AFF3206705E50A47969A6889 /* ThemeCSSTests.swift */,
 				6B774562256C7925FC950E9C /* ThemeTests.swift */,
 				F0615AFF005345436718E472 /* UIDTests.swift */,
+				C1B328FB00C71D47C717CCCD /* UpdateControllerTests.swift */,
 				1AABB30B9CBE81A30B1FAC88 /* URLSafetyTests.swift */,
 				E34BA9DFCD9757E6E7F1783C /* ViewModeMigrationTests.swift */,
 				EC859041424312A804157F63 /* WhenFormattingTests.swift */,
@@ -537,6 +544,7 @@
 				0230D5C90502E9529969642E /* Slug.swift */,
 				6C6DD106CF5C39D987DA980F /* TeaserReconciliation.swift */,
 				BCB707ED28884FC829404F4D /* UID.swift */,
+				258342E503731BFA2087495A /* UpdateController.swift */,
 				EAB3B62E1AA122AC2825E649 /* URLSafety.swift */,
 				EB0CA0C44BA7EC012604187F /* ViewModeMigration.swift */,
 				5494D69CA9871A27D071A07D /* WhenFormatting.swift */,
@@ -601,6 +609,7 @@
 			packageProductDependencies = (
 				C289DA593EEB11DF1FD70FE1 /* GRDB */,
 				F2C4C0813A4B8CDE50D821E0 /* Yams */,
+				EA015CA97AEACEB9BE597733 /* Sparkle */,
 			);
 			productName = PortyMcFolio;
 			productReference = 2831D140592E757FB85AB5AA /* PortyMcFolio.app */;
@@ -628,6 +637,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				48431E77DE2C054708F018E3 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				4C1706AA1C2306DBA7F49C00 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				199E6FF59437C62BEF102883 /* XCRemoteSwiftPackageReference "Yams" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -707,6 +717,7 @@
 				B342F303019F4DC57E6D2DA0 /* ThemeTests.swift in Sources */,
 				4F020BB38358DEA526D64D99 /* UIDTests.swift in Sources */,
 				3A1135F13105037C1CEAE906 /* URLSafetyTests.swift in Sources */,
+				9276EA17CA84D414115589E5 /* UpdateControllerTests.swift in Sources */,
 				4CC8F3D84ECE2C49E5645AAB /* ViewModeMigrationTests.swift in Sources */,
 				FA8370F7EA98BFD10C52D517 /* WhenFormattingTests.swift in Sources */,
 			);
@@ -793,6 +804,7 @@
 				94FFD95C08CEC0CF2F59BB54 /* ToastView.swift in Sources */,
 				50739CEA97D532A0C814F063 /* UID.swift in Sources */,
 				1C33C725A1037ED03E08FF69 /* URLSafety.swift in Sources */,
+				9DACAFEC78FC5FCB4A5F433C /* UpdateController.swift in Sources */,
 				BA78542A23EEE1336F9F2531 /* ViewModeMigration.swift in Sources */,
 				36EE5EEF26C37E8F20F01189 /* WelcomePrimerView.swift in Sources */,
 				4CE2C5E18D138019AE023AE4 /* WhenFormatting.swift in Sources */,
@@ -1064,6 +1076,14 @@
 				minimumVersion = 7.0.0;
 			};
 		};
+		4C1706AA1C2306DBA7F49C00 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1081,6 +1101,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 48431E77DE2C054708F018E3 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
+		};
+		EA015CA97AEACEB9BE597733 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C1706AA1C2306DBA7F49C00 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 		F2C4C0813A4B8CDE50D821E0 /* Yams */ = {
 			isa = XCSwiftPackageProductDependency;
