@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="yes"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Porty McFolio</title>
+    <link>https://moldandyeast.github.io/porty-mcfolio/appcast.xml</link>
+    <description>Updates for Porty McFolio</description>
+    <language>en</language>
+  </channel>
+</rss>
