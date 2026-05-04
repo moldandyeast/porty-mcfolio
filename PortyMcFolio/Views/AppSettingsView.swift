@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AppSettingsView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject private var updateController: UpdateController
     @Environment(\.theme) var theme
     @Environment(\.colorScheme) private var colorScheme
     @State private var logo: NSImage?
@@ -38,6 +39,8 @@ struct AppSettingsView: View {
                 themesSection
                 divider
                 shortcutsSection
+                divider
+                updatesSection
 
                 HStack {
                     Spacer()
@@ -808,6 +811,54 @@ struct AppSettingsView: View {
                 shortcutRow("Previous / Next Slide", "\u{2190} / \u{2192}")
                 shortcutRow("Rename Current File", "double-click filename")
                 shortcutRow("Copy File to Clipboard", "click copy icon")
+            }
+        }
+    }
+
+    // MARK: - Updates
+
+    private var updatesSection: some View {
+        section("Updates") {
+            VStack(alignment: .leading, spacing: DT.Spacing.md) {
+                Text("Porty McFolio checks for updates daily by default. Updates are downloaded only after you confirm. No usage data, system information, or telemetry is sent during update checks — only a request to fetch the public release feed.")
+                    .font(DT.Typography.body)
+                    .foregroundStyle(theme.colors.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Toggle(isOn: Binding(
+                    get: { updateController.automaticallyChecksForUpdates },
+                    set: { updateController.automaticallyChecksForUpdates = $0 }
+                )) {
+                    Text("Automatically check for updates")
+                        .font(DT.Typography.body)
+                }
+                .toggleStyle(.switch)
+
+                HStack(spacing: DT.Spacing.lg) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Current version")
+                            .font(DT.Typography.caption)
+                            .foregroundStyle(theme.colors.textTertiary)
+                        Text(updateController.currentVersion)
+                            .font(DT.Typography.body.monospacedDigit())
+                            .foregroundStyle(theme.colors.textPrimary)
+                    }
+                    if let last = updateController.lastCheckedAt {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Last checked")
+                                .font(DT.Typography.caption)
+                                .foregroundStyle(theme.colors.textTertiary)
+                            Text(last, format: .relative(presentation: .named))
+                                .font(DT.Typography.body)
+                                .foregroundStyle(theme.colors.textPrimary)
+                        }
+                    }
+                }
+
+                Button("Check for Updates Now") {
+                    updateController.checkNow()
+                }
+                .disabled(!updateController.canCheckForUpdates)
             }
         }
     }
