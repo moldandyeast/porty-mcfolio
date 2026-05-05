@@ -855,7 +855,7 @@ struct AppSettingsView: View {
                     }
                 }
 
-                Button("Check for Updates Now") {
+                pillButton("Check for Updates Now") {
                     updateController.checkNow()
                 }
                 .disabled(!updateController.canCheckForUpdates)
