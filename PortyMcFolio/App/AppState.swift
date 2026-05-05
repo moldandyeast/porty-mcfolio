@@ -862,6 +862,43 @@ final class AppState: ObservableObject {
         }
     }
 
+    /// Dispatch for ⌘3. Inside a project: lands on splitGallery from any other
+    /// mode; toggles between splitGallery and full gallery on subsequent presses.
+    /// No-op on the project overview.
+    func handleGalleryShortcut() {
+        guard selectedProject != nil else { return }
+        toggleSplitOrFull(splitMode: .splitGallery, fullMode: .gallery)
+    }
+
+    /// Dispatch for ⌘4. Same toggle pattern as `handleGalleryShortcut` but for
+    /// splitList ↔ list.
+    func handleListShortcut() {
+        guard selectedProject != nil else { return }
+        toggleSplitOrFull(splitMode: .splitList, fullMode: .list)
+    }
+
+    /// Dispatch for ⌘5. Same toggle pattern as `handleGalleryShortcut` but for
+    /// splitLinks ↔ links.
+    func handleLinksShortcut() {
+        guard selectedProject != nil else { return }
+        toggleSplitOrFull(splitMode: .splitLinks, fullMode: .links)
+    }
+
+    /// Toggle between a split-pane and full-pane variant of the same content
+    /// type. From any unrelated mode, lands on the split variant first
+    /// (preserves the editor) — repeated presses then flip between split and
+    /// full.
+    private func toggleSplitOrFull(splitMode: ViewMode, fullMode: ViewMode) {
+        switch viewMode {
+        case splitMode:
+            viewMode = fullMode
+        case fullMode:
+            viewMode = splitMode
+        default:
+            viewMode = splitMode
+        }
+    }
+
     /// Tell the reconciler that a specific project's frontmatter or files were just
     /// modified by code inside the app. Bypasses FSEvent latency.
     func notifyProjectFileChanged(uid: String) {

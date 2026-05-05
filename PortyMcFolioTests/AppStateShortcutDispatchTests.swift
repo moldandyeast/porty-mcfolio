@@ -83,4 +83,130 @@ final class AppStateShortcutDispatchTests: XCTestCase {
 
         XCTAssertEqual(state.viewMode, .preview)
     }
+
+    // MARK: - Gallery shortcut (⌘3)
+
+    func testGalleryShortcutFromEditorGoesToSplitGallery() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .editor
+
+        state.handleGalleryShortcut()
+
+        XCTAssertEqual(state.viewMode, .splitGallery)
+    }
+
+    func testGalleryShortcutFromSplitGalleryGoesToFullGallery() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .splitGallery
+
+        state.handleGalleryShortcut()
+
+        XCTAssertEqual(state.viewMode, .gallery)
+    }
+
+    func testGalleryShortcutFromFullGalleryGoesToSplitGallery() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .gallery
+
+        state.handleGalleryShortcut()
+
+        XCTAssertEqual(state.viewMode, .splitGallery)
+    }
+
+    func testGalleryShortcutOnOverviewIsNoOp() {
+        let state = AppState()
+        state.selectedProject = nil
+        state.viewMode = .editor
+
+        state.handleGalleryShortcut()
+
+        XCTAssertEqual(state.viewMode, .editor)
+    }
+
+    // MARK: - List shortcut (⌘4)
+
+    func testListShortcutFromEditorGoesToSplitList() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .editor
+
+        state.handleListShortcut()
+
+        XCTAssertEqual(state.viewMode, .splitList)
+    }
+
+    func testListShortcutFromSplitListGoesToFullList() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .splitList
+
+        state.handleListShortcut()
+
+        XCTAssertEqual(state.viewMode, .list)
+    }
+
+    func testListShortcutFromFullListGoesToSplitList() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .list
+
+        state.handleListShortcut()
+
+        XCTAssertEqual(state.viewMode, .splitList)
+    }
+
+    func testListShortcutOnOverviewIsNoOp() {
+        let state = AppState()
+        state.selectedProject = nil
+        state.viewMode = .editor
+
+        state.handleListShortcut()
+
+        XCTAssertEqual(state.viewMode, .editor)
+    }
+
+    // MARK: - Links shortcut (⌘5)
+
+    func testLinksShortcutFromEditorGoesToSplitLinks() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .editor
+
+        state.handleLinksShortcut()
+
+        XCTAssertEqual(state.viewMode, .splitLinks)
+    }
+
+    func testLinksShortcutFromSplitLinksGoesToFullLinks() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .splitLinks
+
+        state.handleLinksShortcut()
+
+        XCTAssertEqual(state.viewMode, .links)
+    }
+
+    func testLinksShortcutFromFullLinksGoesToSplitLinks() {
+        let state = AppState()
+        state.selectedProject = makeProject()
+        state.viewMode = .links
+
+        state.handleLinksShortcut()
+
+        XCTAssertEqual(state.viewMode, .splitLinks)
+    }
+
+    func testLinksShortcutOnOverviewIsNoOp() {
+        let state = AppState()
+        state.selectedProject = nil
+        state.viewMode = .editor
+
+        state.handleLinksShortcut()
+
+        XCTAssertEqual(state.viewMode, .editor)
+    }
 }

@@ -239,13 +239,13 @@ struct AppSettingsView: View {
                     pillOption("Preview", .preview, selection: $appState.defaultViewMode)
                     pillOption("Carousel", .carousel, selection: $appState.defaultViewMode)
                 }
-                // Row 2: split modes (⌘3/4/5).
+                // Row 2: split modes (first press of ⌘3/4/5).
                 HStack(spacing: DT.Spacing.xs) {
                     pillOption("Editor + Gallery", .splitGallery, selection: $appState.defaultViewMode)
                     pillOption("Editor + List", .splitList, selection: $appState.defaultViewMode)
                     pillOption("Editor + Links", .splitLinks, selection: $appState.defaultViewMode)
                 }
-                // Row 3: full-width variants (⌘⇧3/4/5).
+                // Row 3: full-width variants (second press of ⌘3/4/5 toggles to these).
                 HStack(spacing: DT.Spacing.xs) {
                     pillOption("Gallery", .gallery, selection: $appState.defaultViewMode)
                     pillOption("List", .list, selection: $appState.defaultViewMode)
@@ -537,12 +537,12 @@ struct AppSettingsView: View {
             featureRow(
                 icon: "rectangle.split.2x1",
                 title: "Split (Editor + Gallery / List / Links)",
-                description: "Editor on the left, chosen secondary pane on the right. Drag the divider to resize, double-click to reset. Each split has a full-width counterpart (\u{2318}\u{21E7}3/4/5)."
+                description: "Editor on the left, chosen secondary pane on the right. Drag the divider to resize, double-click to reset. Press \u{2318}3 / \u{2318}4 / \u{2318}5 again to toggle to the full-width variant of the same pane."
             )
             featureRow(
                 icon: "square.grid.2x2",
                 title: "Gallery / List / Links",
-                description: "Grid of media files, table with file metadata, or saved-URL cards. Pick each directly with \u{2318}\u{21E7}3 / \u{2318}\u{21E7}4 / \u{2318}\u{21E7}5."
+                description: "Grid of media files, table with file metadata, or saved-URL cards. Each is the full-width variant of the matching split mode \u{2014} press \u{2318}3 / \u{2318}4 / \u{2318}5 once for split, again for full."
             )
             featureRow(
                 icon: "rectangle.stack.badge.play",
@@ -773,12 +773,9 @@ struct AppSettingsView: View {
             subsection("View Modes (in a project)") {
                 shortcutRow("Editor", "\u{2318}1")
                 shortcutRow("Preview", "\u{2318}2")
-                shortcutRow("Editor + Gallery", "\u{2318}3")
-                shortcutRow("Gallery", "\u{2318}\u{21E7}3")
-                shortcutRow("Editor + List", "\u{2318}4")
-                shortcutRow("List", "\u{2318}\u{21E7}4")
-                shortcutRow("Editor + Links", "\u{2318}5")
-                shortcutRow("Links", "\u{2318}\u{21E7}5")
+                shortcutRow("Gallery (toggles split / full)", "\u{2318}3")
+                shortcutRow("List (toggles split / full)", "\u{2318}4")
+                shortcutRow("Links (toggles split / full)", "\u{2318}5")
                 shortcutRow("Carousel", "\u{2318}6")
                 shortcutRow("Project Settings", "\u{2318}9")
             }

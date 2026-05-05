@@ -65,28 +65,21 @@ struct PortyMcFolioApp: App {
                 .keyboardShortcut("2", modifiers: .command)
 
                 // ⌘3–⌘6 and ⌘9 only make sense inside a project.
-                Button("Editor + Gallery") { appState.viewMode = .splitGallery }
+                // ⌘3/⌘4/⌘5 toggle: first press lands on the split variant
+                // (so the editor stays visible); pressing the same shortcut
+                // again toggles between split and full pane. The old
+                // ⌘⇧3/⌘⇧4/⌘⇧5 bindings were removed because they collide
+                // with macOS's screenshot shortcuts.
+                Button("Gallery") { appState.handleGalleryShortcut() }
                     .keyboardShortcut("3", modifiers: .command)
                     .disabled(onOverview)
 
-                Button("Gallery") { appState.viewMode = .gallery }
-                    .keyboardShortcut("3", modifiers: [.command, .shift])
-                    .disabled(onOverview)
-
-                Button("Editor + List") { appState.viewMode = .splitList }
+                Button("List") { appState.handleListShortcut() }
                     .keyboardShortcut("4", modifiers: .command)
                     .disabled(onOverview)
 
-                Button("List") { appState.viewMode = .list }
-                    .keyboardShortcut("4", modifiers: [.command, .shift])
-                    .disabled(onOverview)
-
-                Button("Editor + Links") { appState.viewMode = .splitLinks }
+                Button("Links") { appState.handleLinksShortcut() }
                     .keyboardShortcut("5", modifiers: .command)
-                    .disabled(onOverview)
-
-                Button("Links") { appState.viewMode = .links }
-                    .keyboardShortcut("5", modifiers: [.command, .shift])
                     .disabled(onOverview)
 
                 Button("Carousel") { appState.viewMode = .carousel }
