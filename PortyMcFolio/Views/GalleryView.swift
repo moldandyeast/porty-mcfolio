@@ -21,7 +21,7 @@ private struct FolderDropTarget<Content: View>: View {
                     .padding(-2)
                     .allowsHitTesting(false)
             )
-            .onDrop(of: [.fileURL], isTargeted: $isTargeted) { providers in
+            .onDrop(of: [.fileURL, .image], isTargeted: $isTargeted) { providers in
                 onDrop(providers)
             }
     }
@@ -205,7 +205,7 @@ struct GalleryView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .onDrop(of: [.fileURL, .url, .text], isTargeted: nil) { providers in
+                .onDrop(of: [.fileURL, .url, .text, .image], isTargeted: nil) { providers in
                     handleDrop(providers: providers)
                 }
                 urlComposer
@@ -220,7 +220,7 @@ struct GalleryView: View {
                         listContent
                     }
                 }
-                .onDrop(of: [.fileURL, .url, .text], isTargeted: nil) { providers in
+                .onDrop(of: [.fileURL, .url, .text, .image], isTargeted: nil) { providers in
                     handleDrop(providers: providers)
                 }
                 .contextMenu { galleryBackgroundMenu }
@@ -525,7 +525,7 @@ struct GalleryView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .contentShape(Rectangle())
-        .onDrop(of: [.fileURL, .url, .text], isTargeted: nil) { providers in
+        .onDrop(of: [.fileURL, .url, .text, .image], isTargeted: nil) { providers in
             handleDrop(providers: providers)
         }
     }
@@ -1479,20 +1479,50 @@ struct GalleryView: View {
             return true
         }
 
-        // Fallback: single-file / external drag with one public.file-url.
-        var urls: [URL] = []
-        let group = DispatchGroup()
-        for provider in providers {
-            group.enter()
-            _ = provider.loadObject(ofClass: NSURL.self) { url, _ in
-                defer { group.leave() }
-                if let u = url as? URL { urls.append(u) }
+        // Split providers: those with a real file URL vs. those that only
+        // expose image data (screenshot thumbnail, browser image drag).
+        let urlProviders = providers.filter { $0.canLoadObject(ofClass: NSURL.self) }
+        let imageOnlyProviders = providers.filter {
+            !$0.canLoadObject(ofClass: NSURL.self) && $0.canLoadObject(ofClass: NSImage.self)
+        }
+
+        if !urlProviders.isEmpty {
+            var urls: [URL] = []
+            let group = DispatchGroup()
+            for provider in urlProviders {
+                group.enter()
+                _ = provider.loadObject(ofClass: NSURL.self) { url, _ in
+                    defer { group.leave() }
+                    if let u = url as? URL { urls.append(u) }
+                }
+            }
+            group.notify(queue: .main) {
+                self.performMove(urls: urls, into: folderURL)
             }
         }
-        group.notify(queue: .main) {
-            self.performMove(urls: urls, into: folderURL)
+
+        for provider in imageOnlyProviders {
+            _ = provider.loadObject(ofClass: NSImage.self) { obj, _ in
+                guard let image = obj as? NSImage,
+                      let tiff = image.tiffRepresentation,
+                      let rep = NSBitmapImageRep(data: tiff),
+                      let png = rep.representation(using: .png, properties: [:]) else { return }
+                Task { @MainActor in
+                    let filename = ClipboardPaste.pastedImageName()
+                    let dest = folderURL.appendingPathComponent(filename)
+                    guard !FileManager.default.fileExists(atPath: dest.path) else { return }
+                    do {
+                        try png.write(to: dest)
+                        self.scanProjectFolder()
+                        self.appState.showToast("Added: \(filename) to /\(folderURL.lastPathComponent)")
+                    } catch {
+                        self.showAlert(title: "Can't Add", message: "Failed to save image: \(error.localizedDescription)")
+                    }
+                }
+            }
         }
-        return true
+
+        return !urlProviders.isEmpty || !imageOnlyProviders.isEmpty
     }
 
     private func performMove(urls: [URL], into folderURL: URL) {
@@ -1907,6 +1937,30 @@ struct GalleryView: View {
                     guard let text else { return }
                     Task { @MainActor in
                         _ = self.tryAddLinkFromText(text)
+                    }
+                }
+                handled = true
+            } else if provider.canLoadObject(ofClass: NSImage.self) {
+                // Raw image data (screenshot floating thumbnail, browser image
+                // drag, Photos.app, etc.) — no public.file-url on the
+                // pasteboard. Save the PNG bytes into the current folder.
+                let destFolder = self.currentFolderURL
+                _ = provider.loadObject(ofClass: NSImage.self) { obj, _ in
+                    guard let image = obj as? NSImage,
+                          let tiff = image.tiffRepresentation,
+                          let rep = NSBitmapImageRep(data: tiff),
+                          let png = rep.representation(using: .png, properties: [:]) else { return }
+                    Task { @MainActor in
+                        let filename = ClipboardPaste.pastedImageName()
+                        let dest = destFolder.appendingPathComponent(filename)
+                        guard !FileManager.default.fileExists(atPath: dest.path) else { return }
+                        do {
+                            try png.write(to: dest)
+                            self.scanProjectFolder()
+                            self.appState.showToast("Added: \(filename)")
+                        } catch {
+                            self.showAlert(title: "Can't Add", message: "Failed to save image: \(error.localizedDescription)")
+                        }
                     }
                 }
                 handled = true

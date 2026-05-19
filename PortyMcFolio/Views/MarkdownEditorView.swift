@@ -59,45 +59,139 @@ final class MarkdownTextView: NSTextView {
 
     // MARK: - Drag-Drop
 
+    /// Background queue for resolving `NSFilePromiseReceiver` drops — drags
+    /// where the source file doesn't yet exist as a `file://` URL on the
+    /// pasteboard (screenshot floating thumbnail, browser image drags, Mail
+    /// attachments, Photos.app library items).
+    private lazy var filePromiseQueue: OperationQueue = {
+        let q = OperationQueue()
+        q.qualityOfService = .userInitiated
+        return q
+    }()
+
     func registerDragTypes() {
+        let promiseTypes = NSFilePromiseReceiver.readableDraggedTypes
+            .map { NSPasteboard.PasteboardType($0) }
+        let imageTypes = NSImage.imageTypes
+            .map { NSPasteboard.PasteboardType($0) }
         registerForDraggedTypes([
             .fileURL,
             .URL,
+            .tiff,
+            .png,
             NSPasteboard.PasteboardType(rawValue: DragPayload.typeIdentifier),
-        ])
+        ] + promiseTypes + imageTypes)
     }
 
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        sender.draggingPasteboard.canReadObject(forClasses: [NSURL.self], options: nil) ? .copy : super.draggingEntered(sender)
+        let pb = sender.draggingPasteboard
+        if pb.canReadObject(forClasses: [NSURL.self, NSFilePromiseReceiver.self, NSImage.self], options: nil) {
+            return .copy
+        }
+        return super.draggingEntered(sender)
     }
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        let pb = sender.draggingPasteboard
+        // Capture insertion index synchronously — promise resolution is async,
+        // and the cursor/view state may shift before it completes.
+        let dropPoint = convert(sender.draggingLocation, from: nil)
+        let dropIndex = characterIndexForInsertion(at: dropPoint)
 
-        // Prefer the in-process multi-file list when a gallery drag set it.
+        // 1. In-process multi-file handoff (gallery drag inside the app).
         if let urls = MultiDragSession.active, !urls.isEmpty {
             MultiDragSession.active = nil
-            let dropPoint = convert(sender.draggingLocation, from: nil)
-            let index = characterIndexForInsertion(at: dropPoint)
-            let inserted = insertFileEmbeds(for: urls, at: index)
-            if inserted {
-                let label = urls.count == 1
-                    ? "Added: \(urls[0].lastPathComponent)"
-                    : "Added \(urls.count) files"
-                NotificationCenter.default.post(name: .showToast, object: label)
-            }
-            return inserted
+            return finishDrop(urls: urls, at: dropIndex)
         }
 
-        // Fallback (external drags, single-file): preserve existing behavior.
-        guard let urls = pb.readObjects(forClasses: [NSURL.self], options: [
+        let pb = sender.draggingPasteboard
+
+        // 2. Real file URLs on the pasteboard (Finder drags of saved files).
+        //    Filter to URLs that point to files that actually exist — some
+        //    sources (screenshot thumbnails pre-save, browser in-flight images)
+        //    put placeholder URLs on the pasteboard alongside image data.
+        if let urls = pb.readObjects(forClasses: [NSURL.self], options: [
             .urlReadingFileURLsOnly: true
-        ]) as? [URL], !urls.isEmpty else {
+        ]) as? [URL] {
+            let existing = urls.filter { FileManager.default.fileExists(atPath: $0.path) }
+            if !existing.isEmpty {
+                return finishDrop(urls: existing, at: dropIndex)
+            }
+        }
+
+        // 3. Raw image data on the pasteboard (screenshot floating thumbnail,
+        //    browser image drags, drags from Preview / Photos). Mirrors the
+        //    paste flow: save as `pasted-{timestamp}.png` in the project folder
+        //    and embed.
+        if let image = NSImage(pasteboard: pb),
+           let tiff = image.tiffRepresentation,
+           let rep = NSBitmapImageRep(data: tiff),
+           let png = rep.representation(using: .png, properties: [:]) {
+            if let savedURL = writeDroppedImage(png) {
+                return finishDrop(urls: [savedURL], at: dropIndex)
+            }
+        }
+
+        // 4. File promises — file doesn't yet exist on disk; receive it into
+        //    the project folder, then embed on the main queue.
+        guard let projectFolder = projectFolderURL else {
             return super.performDragOperation(sender)
         }
 
-        let dropPoint = convert(sender.draggingLocation, from: nil)
-        let index = characterIndexForInsertion(at: dropPoint)
+        var receivers: [NSFilePromiseReceiver] = []
+        sender.enumerateDraggingItems(
+            options: [],
+            for: nil,
+            classes: [NSFilePromiseReceiver.self],
+            searchOptions: [:]
+        ) { item, _, _ in
+            if let r = item.item as? NSFilePromiseReceiver {
+                receivers.append(r)
+            }
+        }
+        guard !receivers.isEmpty else {
+            return super.performDragOperation(sender)
+        }
+
+        let group = DispatchGroup()
+        let collectedLock = NSLock()
+        var collected: [URL] = []
+
+        for receiver in receivers {
+            group.enter()
+            receiver.receivePromisedFiles(
+                atDestination: projectFolder,
+                options: [:],
+                operationQueue: filePromiseQueue
+            ) { url, error in
+                if let error {
+                    AppLogger.ui.error("MarkdownEditor file-promise drop failed: \(error.localizedDescription, privacy: .public)")
+                } else {
+                    collectedLock.lock()
+                    collected.append(url)
+                    collectedLock.unlock()
+                }
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) { [weak self] in
+            guard let self else { return }
+            if collected.isEmpty {
+                NotificationCenter.default.post(
+                    name: .showToast,
+                    object: "Couldn't receive dropped file(s)."
+                )
+                return
+            }
+            let safeIndex = min(dropIndex, self.textStorage?.length ?? 0)
+            _ = self.finishDrop(urls: collected, at: safeIndex)
+        }
+
+        return true
+    }
+
+    @discardableResult
+    private func finishDrop(urls: [URL], at index: Int) -> Bool {
         let inserted = insertFileEmbeds(for: urls, at: index)
         if inserted {
             let label = urls.count == 1
@@ -106,6 +200,24 @@ final class MarkdownTextView: NSTextView {
             NotificationCenter.default.post(name: .showToast, object: label)
         }
         return inserted
+    }
+
+    /// Write dropped PNG bytes into the project folder as `pasted-{timestamp}.png`
+    /// and return the destination URL. Returns nil if there's no project folder,
+    /// the file already exists, or the write fails — caller treats nil as "drop
+    /// not handled" and falls through to the next path.
+    private func writeDroppedImage(_ data: Data) -> URL? {
+        guard let projectFolder = projectFolderURL else { return nil }
+        let filename = ClipboardPaste.pastedImageName()
+        let dest = projectFolder.appendingPathComponent(filename)
+        guard !FileManager.default.fileExists(atPath: dest.path) else { return nil }
+        do {
+            try data.write(to: dest)
+            return dest
+        } catch {
+            AppLogger.ui.error("MarkdownEditor dropped-image write failed: \(error.localizedDescription, privacy: .public)")
+            return nil
+        }
     }
 
     // MARK: - Embed insertion helpers (shared by paste and drop)
