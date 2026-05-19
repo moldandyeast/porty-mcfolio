@@ -95,11 +95,7 @@ struct WhenPicker: View {
             }
             modeButton(title: "Range", isActive: value.isRange) {
                 guard !value.isRange else { return }
-                // Bootstrap a range from the current year-only year.
-                let yr = value.yearOnlyYear ?? calendar.component(.year, from: Date())
-                let start = calendar.date(from: DateComponents(year: yr, month: 1, day: 1))!
-                let end = lastDay(of: 1, year: yr)
-                value = WhenValue(date: start, dateEnd: end, yearOnlyYear: nil)
+                value = WhenValue.rangeBootstrap(from: Date())
                 activeField = .end
             }
         }
