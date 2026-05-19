@@ -123,24 +123,7 @@ struct WhenPicker: View {
 
     private var yearOnlyBody: some View {
         VStack(spacing: DT.Spacing.md) {
-            HStack {
-                Button { stepYearOnlyYear(by: -1) } label: {
-                    Image(systemName: "chevron.left").font(.system(size: 12, weight: .medium))
-                }
-                .iconButton()
-                Spacer()
-                Text(String(displayYear))
-                    .font(.system(size: 16, weight: .medium, design: .monospaced))
-                    .foregroundStyle(theme.colors.textPrimary)
-                Spacer()
-                Button { stepYearOnlyYear(by: 1) } label: {
-                    Image(systemName: "chevron.right").font(.system(size: 12, weight: .medium))
-                }
-                .iconButton()
-            }
-            .padding(.horizontal, DT.Spacing.sm)
-            .padding(.vertical, DT.Spacing.xs)
-            .background(theme.colors.backgroundAlt, in: RoundedRectangle(cornerRadius: DT.Radius.small))
+            YearStepper(year: yearOnlyBinding, autoFocus: true)
 
             Text("Project filed under \(String(displayYear)).")
                 .font(DT.Typography.caption)
@@ -149,9 +132,13 @@ struct WhenPicker: View {
         }
     }
 
-    private func stepYearOnlyYear(by delta: Int) {
-        let yr = (value.yearOnlyYear ?? calendar.component(.year, from: Date())) + delta
-        value = WhenValue.yearOnly(year: yr, anchor: value.date)
+    private var yearOnlyBinding: Binding<Int> {
+        Binding(
+            get: { value.yearOnlyYear ?? calendar.component(.year, from: Date()) },
+            set: { newYear in
+                value = WhenValue.yearOnly(year: newYear, anchor: value.date)
+            }
+        )
     }
 
     // MARK: - Range body

@@ -2,6 +2,10 @@ import SwiftUI
 
 struct YearStepper: View {
     @Binding var year: Int
+    /// When true, the stepper grabs keyboard focus on first appearance so
+    /// ←/→ arrow stepping works without an extra click. Used by hosts like
+    /// `WhenPicker` that present the stepper inside a popover.
+    var autoFocus: Bool = false
     @State private var isEditing = false
     @State private var editText = ""
     /// Focus for the inline TextField when editing via tap.
@@ -80,6 +84,14 @@ struct YearStepper: View {
             guard !isEditing else { return .ignored }
             increment()
             return .handled
+        }
+        .onAppear {
+            guard autoFocus else { return }
+            // Defer to next runloop so the hosting popover/window has time to
+            // become key — focusing too early gets dropped by AppKit.
+            DispatchQueue.main.async {
+                isStepperFocused = true
+            }
         }
     }
 
