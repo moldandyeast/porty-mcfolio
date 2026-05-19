@@ -32,6 +32,21 @@ struct WhenValue: Equatable {
     static func yearOnly(year: Int, anchor: Date) -> WhenValue {
         WhenValue(date: anchor, dateEnd: nil, yearOnlyYear: year)
     }
+
+    /// Bootstrap a Range from a reference date.
+    /// Start = first day of (now − 1 month). End = last day of (now's month).
+    /// Year rollover (e.g. January → December of prior year) handled by Calendar.
+    static func rangeBootstrap(from now: Date) -> WhenValue {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        let y = cal.component(.year, from: now)
+        let m = cal.component(.month, from: now)
+        let firstOfCurrent = cal.date(from: DateComponents(year: y, month: m, day: 1))!
+        let firstOfPrev = cal.date(byAdding: .month, value: -1, to: firstOfCurrent)!
+        let firstOfNext = cal.date(from: DateComponents(year: y, month: m + 1, day: 1))!
+        let lastOfCurrent = cal.date(byAdding: .day, value: -1, to: firstOfNext)!
+        return WhenValue(date: firstOfPrev, dateEnd: lastOfCurrent, yearOnlyYear: nil)
+    }
 }
 
 struct Project: Identifiable, Equatable {
